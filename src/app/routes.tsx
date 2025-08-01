@@ -1,18 +1,38 @@
-import { type ComponentType, type ReactNode, lazy } from "react";
-import { KeyRound, LayoutDashboard, LogIn, type LucideIcon, UserPlus } from "lucide-react";
-import AuthLayout from "@shared/layouts/auth";
-import MainLayout from "@shared/layouts/main";
-import { APP_ROUTES } from "./constant";
+import { type ComponentType, lazy } from "react";
+import {
+  KeyRound,
+  LayoutDashboard,
+  LockKeyhole,
+  LogIn,
+  type LucideIcon,
+  MessageSquareCode,
+  Settings,
+  User,
+  UserPlus,
+} from "lucide-react";
+import { Navigate, Outlet } from "react-router";
+import { routes as rpath } from "@/lib/constants/route";
+import { useAuthStore } from "@/lib/stores/auth";
+import { Loading } from "@/ui/components/loading";
+import AuthLayout from "@/ui/layouts/auth";
+import MainLayout from "@/ui/layouts/main";
 
 // --- Lazy-loaded Page Components ---
-const NotFound = lazy(() => import("./error-404"));
+const NotFound = lazy(() => import("../ui/pages/error-404"));
+//
+const Callback = lazy(() => import("../modules/callback/view"));
+//
 const Login = lazy(() => import("../modules/auth/view/login"));
 const Register = lazy(() => import("../modules/auth/view/register"));
 const ForgotPassword = lazy(() => import("../modules/auth/view/forgot-password"));
+const Otp = lazy(() => import("../modules/auth/view/otp"));
+const ResetPassword = lazy(() => import("../modules/auth/view/reset-password"));
+//
 const Dashboard = lazy(() => import("../modules/dashboard/view"));
+const Profile = lazy(() => import("../modules/me/view/profile"));
+const ProfileSetting = lazy(() => import("../modules/me/view/setting"));
 
-// --- Type Definitions ---
-export interface RouteType {
+interface RouteType {
   title: string;
   path: string;
   element: ComponentType;
@@ -21,76 +41,106 @@ export interface RouteType {
   children?: RouteType[];
 }
 
-export interface RouteLayoutType {
-  layout: ComponentType<{ children: ReactNode }>;
+interface RouteLayoutType {
+  protector?: ComponentType;
+  layout?: ComponentType;
   routes: RouteType[];
 }
 
-// --- Route Definitions ---
+const AuthRoute = () => {
+  const { isAuthenticated, isLoading } = useAuthStore();
+  if (isLoading) return <Loading />;
+  if (isAuthenticated) return <Navigate to={rpath.root} replace />;
+  return <Outlet />;
+};
 
-/**
- * Routes accessible to unauthenticated users.
- * These are typically wrapped in the AuthLayout.
- */
-export const authRoutes: RouteType[] = [
-  {
-    title: "Login",
-    path: APP_ROUTES.LOGIN,
-    element: Login,
-    icon: LogIn,
-  },
-  {
-    title: "Register",
-    path: APP_ROUTES.REGISTER,
-    element: Register,
-    icon: UserPlus,
-  },
-  {
-    title: "Forgot Password",
-    path: APP_ROUTES.FORGOT_PASSWORD,
-    element: ForgotPassword,
-    icon: KeyRound,
-  },
-];
+const MainRoute = () => {
+  const { isAuthenticated, isLoading } = useAuthStore();
+  if (isLoading) return <Loading />;
+  if (isAuthenticated) return <Outlet />;
+  return <Navigate to={rpath.login} replace />;
+};
 
-/**
- * Routes accessible only to authenticated users.
- * These are typically wrapped in the MainLayout.
- */
-export const protectedRoutes: RouteType[] = [
-  {
-    title: "Dashboard",
-    path: APP_ROUTES.ROOT,
-    element: Dashboard,
-    icon: LayoutDashboard,
-  },
-  // Add other protected routes for your application here
-  // e.g., { title: "Settings", path: "/settings", element: Settings, icon: SettingsIcon }
-];
-
-/**
- * Publicly accessible routes that don't require a specific layout.
- */
-export const publicRoutes: RouteType[] = [
-  {
-    title: "Not Found",
-    path: APP_ROUTES.NOT_FOUND,
-    element: NotFound,
-    isHidden: true,
-  },
-];
-
-/**
- * The final routing structure that combines all route types with their layouts.
- * This is consumed by the main App component to generate React Router routes.
- */
 export const routes: RouteLayoutType[] = [
   {
+    protector: AuthRoute,
     layout: AuthLayout,
-    routes: authRoutes,
+    routes: [
+      {
+        title: "Login",
+        path: rpath.login,
+        element: Login,
+        icon: LogIn,
+        isHidden: true,
+      },
+      {
+        title: "Register",
+        path: rpath.register,
+        element: Register,
+        icon: UserPlus,
+        isHidden: true,
+      },
+      {
+        title: "Forgot Password",
+        path: rpath.forgotPassword,
+        element: ForgotPassword,
+        icon: KeyRound,
+        isHidden: true,
+      },
+      {
+        title: "OTP Verification",
+        path: rpath.otp,
+        element: Otp,
+        icon: MessageSquareCode,
+        isHidden: true,
+      },
+      {
+        title: "Reset Password",
+        path: rpath.resetPassword,
+        element: ResetPassword,
+        icon: LockKeyhole,
+        isHidden: true,
+      },
+    ],
   },
   {
+    protector: MainRoute,
     layout: MainLayout,
-    routes: protectedRoutes,
+    routes: [
+      {
+        title: "Dashboard",
+        path: rpath.root,
+        element: Dashboard,
+        icon: LayoutDashboard,
+      },
+      {
+        title: "Profile",
+        path: rpath.me.profile,
+        element: Profile,
+        icon: User,
+      },
+      {
+        title: "Settings",
+        path: rpath.me.setting,
+        element: ProfileSetting,
+        icon: Settings,
+      },
+    ],
+  },
+  {
+    routes: [
+      {
+        title: "Callback",
+        path: rpath.callback,
+        element: Callback,
+        isHidden: true,
+      },
+      {
+        title: "Not Found",
+        path: rpath.notFound,
+        element: NotFound,
+        isHidden: true,
+      },
+    ],
   },
 ];

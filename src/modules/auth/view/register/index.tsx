@@ -1,92 +1,126 @@
-import { type FormEvent } from "react";
-import { APP_ROUTES } from "@app/constant";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Link } from "react-router";
-import { toast } from "sonner";
-import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+import { routes } from "@/lib/constants/route";
+import { Button } from "@/ui/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/ui/components/ui/form";
+import { Input } from "@/ui/components/ui/input";
+import { useViewModel } from "./viewmodel";
 
-export default function Page() {
-  const onClickGoogle = () => {
-    toast.warning("Login with Google is not implement yet.");
-  };
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    toast.success("Register success");
-  };
+const Page = () => {
+  const { form, isLoading, showPassword, togglePasswordVisibility, handleRegister, onClickGoogle } =
+    useViewModel();
 
   return (
     <>
-      <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Create an account</h1>
-          <p className="text-muted-foreground text-sm text-balance">It's free and only takes a minute</p>
-        </div>
+      <div className="mb-6 flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">Create an account</h1>
+        <p className="text-muted-foreground text-sm text-balance">
+          Enter your information below to create your account
+        </p>
+      </div>
 
-        <div className="grid gap-6">
-          <div className="grid gap-3">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              type="tet"
-              name="name"
-              placeholder="John Doe"
-              autoComplete="off"
-              defaultValue="John Doe"
-              required
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleRegister)} className="flex flex-col gap-6">
+          <div className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} disabled={isLoading} autoComplete="off" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
+            <FormField
+              control={form.control}
               name="email"
-              placeholder="m@example.com"
-              autoComplete="off"
-              defaultValue="admin@admin.com"
-              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="m@example.com" {...field} disabled={isLoading} autoComplete="off" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-
-          <div className="grid gap-3">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
+            <FormField
+              control={form.control}
               name="password"
-              placeholder="********"
-              defaultValue="Secret123!"
-              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        {...field}
+                        disabled={isLoading}
+                        autoComplete="new-password"
+                        className="pr-10"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute inset-y-0 right-0 h-full px-3"
+                      onClick={togglePasswordVisibility}
+                      disabled={isLoading}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="text-muted-foreground h-4 w-4" />
+                      ) : (
+                        <Eye className="text-muted-foreground h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Register
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Create Account
           </Button>
-        </div>
-      </form>
+        </form>
+      </Form>
 
-      <div className="flex flex-col gap-6 mt-6">
-        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-          <span className="bg-background text-muted-foreground relative z-10 px-2">or</span>
+      <div className="mt-6 flex flex-col gap-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background text-muted-foreground px-2">Or continue with</span>
+          </div>
         </div>
 
-        <Button variant="outline" className="w-full" onClick={onClickGoogle}>
-          <img src="google.svg" alt="Google icon" className="size-4" />
+        <Button variant="outline" className="w-full" onClick={onClickGoogle} disabled={isLoading}>
+          <img src="/google.svg" alt="Google icon" className="mr-2 size-4" />
           Continue with Google
         </Button>
+      </div>
 
-        <div className="text-center text-sm">
-          <span>Already have an account? </span>
-          <Link to={APP_ROUTES.LOGIN} className="underline underline-offset-4">
-            Sign in
-          </Link>
-        </div>
+      <div className="mt-6 text-center text-sm">
+        <span>Already have an account? </span>
+        <Link to={routes.login} className="underline underline-offset-4">
+          Sign In
+        </Link>
       </div>
     </>
   );
+};
+
+/**
+ * The container component acting as the entry point for the feature.
+ */
+export default function RegisterContainer() {
+  return <Page />;
 }

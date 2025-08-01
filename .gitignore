@@ -25,4 +25,6 @@ dist-ssr
 
 # local only
 .env
-.npmrc
+package-lock.json
+bun.lock
+coverage/

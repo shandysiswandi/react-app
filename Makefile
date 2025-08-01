@@ -1,46 +1,97 @@
-# ==============================================================================
-#  Development Tasks
-# ==============================================================================
-.PHONY: run lint format
+# =============================================================================
+# Project Variables & Configuration
+# =============================================================================
 
-run:
+# Define tools
+BUN := bun
+DOCKER := docker
+
+# Docker image variables
+IMAGE_NAME := react-app
+TAG := latest
+
+# Include the .env file if it exists
+-include .env
+export
+
+# =============================================================================
+# Phony Targets (Commands that are not files)
+# =============================================================================
+
+.PHONY: install run build preview lint format clean docker-build docker-run help
+
+# Set default goal
+.DEFAULT_GOAL := help
+
+# =============================================================================
+# Development Workflow
+# =============================================================================
+
+install: ## Install dependencies using Bun.
+	@echo ">> Installing dependencies..."
+	@$(BUN) install
+
+run: ## Start the development server.
 	@echo "🚀 Starting development server..."
-	@npm run dev
+	@$(BUN) run dev
 
-lint:
+build: ## Build the production app.
+	@echo "🚀 Building production app..."
+	@$(BUN) run build
+
+preview: ## Preview the production app locally.
+	@echo "🚀 Starting preview server..."
+	@$(BUN) run preview
+
+clean: ## Clean build artifacts (node_modules, dist, coverage).
+	@echo "🧹 Cleaning build artifacts..."
+	@rm -rf node_modules dist coverage bun.lock
+
+# =============================================================================
+# Testing
+# =============================================================================
+
+test-unit: ## Run unit tests with Vitest
+	@echo "🧪 Running unit tests..."
+	@bun run test:unit
+
+test-coverage: ## Run unit tests with coverage report
+	@echo "📊 Running unit tests with coverage..."
+	@bun run test:coverage
+
+# =============================================================================
+# Code Quality
+# =============================================================================
+
+lint: ## Lint the codebase.
 	@echo "🔎 Linting code..."
-	@npm run lint
+	@$(BUN) run lint
 
-format:
+format: ## Format the codebase.
 	@echo "💅 Formatting code..."
-	@npm run format
+	@$(BUN) run format
 
-# ==============================================================================
-#  Production Tasks
-# ==============================================================================
-.PHONY: build preview
+# =============================================================================
+# Docker & Containerization
+# =============================================================================
 
-build:
-	@echo "🚀 Starting build production app..."
-	@npm run build
-
-preview:
-	@echo "🚀 Starting preview production app..."
-	@npm run preview
-
-# ==============================================================================
-#  Docker Tasks
-# ==============================================================================
-.PHONY: docker-build docker-run
-
-# Builds the Docker image.
-docker-build:
+docker-build: ## Build the Docker image.
 	@echo "🐳 Building Docker image..."
-	@docker build -t react-app .
+	@$(DOCKER) build -t $(IMAGE_NAME):$(TAG) .
 
-# Runs the Docker container. This depends on the image being built first.
-# --rm: Automatically removes the container when it exits.
-# -p 3000:80: Maps port 3000 on the host to port 80 in the container.
-docker-run: docker-build
+docker-run: docker-build ## Run the Docker container.
 	@echo "🚢 Running Docker container..."
-	@docker run --rm -it -p 3000:80 react-app
+	@$(DOCKER) run --rm -it \
+	-e VITE_ENV=$(VITE_ENV) \
+	-e VITE_BASE_API_URL=$(VITE_BASE_API_URL) \
+	-p 3000:80 $(IMAGE_NAME):$(TAG)
+
+# =============================================================================
+# Help
+# =============================================================================
+
+help: ## Show this help message.
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets: \n"
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)

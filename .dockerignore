@@ -1,6 +1,30 @@
-node_modules
-dist
+# Git
 .git
+.gitignore
+.github
+.husky
+
+# Node
+node_modules
+npm-debug.log
+
+# Build output (handled by the Dockerfile)
+dist
+build
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Tests and documentation
+tests/
+docs/
+README.md
+
+# IDE and OS files
 .vscode
-Dockerfile
-*.log
+.idea
+*.suo
+*.user
+*.DS_Store

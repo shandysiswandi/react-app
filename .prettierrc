@@ -10,16 +10,8 @@
     { "files": "*.md", "options": { "tabWidth": 2 } },
     { "files": "*.json", "options": { "tabWidth": 2 } }
   ],
-  "plugins": ["@trivago/prettier-plugin-sort-imports"],
-  "importOrder": [
-    "^react$",
-    "^react-dom$",
-    "<THIRD_PARTY_MODULES>",
-    "^@/app/(.*)$",
-    "^@/modules/(.*)$",
-    "^@shared/(.*)$",
-    "^[./]"
-  ],
+  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+  "importOrder": ["^react$", "^react-dom$", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^[./]"],
   "importOrderSeparation": false,
   "importOrderSortSpecifiers": true
 }

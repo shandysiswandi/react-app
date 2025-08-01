@@ -1,1 +1,3 @@
-npx lint-staged --allow-empty
+echo "🔍 Running TypeScript format & lint before commit..."
+
+bun lint-staged --allow-empty

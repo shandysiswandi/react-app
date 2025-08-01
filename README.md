@@ -32,62 +32,56 @@ Follow these instructions to get the project up and running on your local machin
 ### Prerequisites
 
 - **Node.js**: `v22.x` or higher
-- **npm**: `v10.x` or higher
+- **bun**: `v1.2.x` or higher
 
 ### Installation & Setup
 
-1.  **Clone the repository:**
+```bash
+# Clone the repository
+git clone https://github.com/shandysiswandi/react-app.git
+cd react-app
 
-    ```bash
-    git clone https://github.com/shandysiswandi/react-app.git
-    cd react-app
-    ```
+# Configure Environment Variables
+cp .env.example .env
 
-2.  **Configure Environment Variables:**
-    Create a `.env` file by copying the example and update it with your configuration.
+# Install Dependencies
+bun install
 
-    ```bash
-    cp .env.example .env
-    ```
+# Run the Development Server
+bun run dev
+```
 
-3.  **Install Dependencies:**
-
-    ```bash
-    npm install
-    ```
-
-4.  **Run the Development Server:**
-    ```bash
-    npm run dev
-    ```
-
-The application will now be available at **http://localhost:5173**.
+The application will now be available at **http://localhost:5171**.
 
 ---
 
 ## Project Structure
 
-This project follows a feature-driven architecture designed for scalability and maintainability. Instead of organizing files by type (e.g., all components in one folder), we group them by feature. This makes the codebase easier to navigate and scale as new features are added.
+This project follows a feature-driven architecture designed for scalability and maintainability. Instead of organizing files purely by type (e.g., all components in one folder), we group them by feature. This makes the codebase easier to navigate and scale as new features are added.
 
 ```bash
-src
-├── app/                # Core application setup (routing, providers)
-├── modules/            # Feature-based modules (e.g., auth, dashboard)
-│   └── auth/
-│       ├── data/       # Data fetching logic, API services
-│       ├── model/      # TypeScript types and interfaces
-│       ├── service/    # TypeScript types and interfaces
-│       └── view/       # React components and pages for this feature
-└── shared/             # Reusable code across all features
-    ├── components/     # Shared, generic UI components
-    ├── hooks/          # Custom React hooks
-    ├── layouts/        # Application layout components
-    ├── lib/            # Utility functions and libraries
-    └── stores/         # Global Zustand stores
-tests
-├── e2e/                # End-to-end tests (Playwright)
-├── ui/                 # UI component tests (Vitest)
-└── unit/               # Unit tests for business logic (Vitest)
+e2e/                     # End-to-end tests (Playwright)
+src/
+├── app/                 # Core application setup (routing, providers)
+├── lib/                 # Shared libraries and utilities
+│   ├── api/             # API clients and request logic
+│   ├── constants/       # Application-wide constants
+│   ├── stores/          # Global Zustand stores
+│   └── utils/           # Utility/helper functions
+├── modules/             # Feature-based modules
+│   ├── auth/            # Authentication-related features
+│   │   ├── data/        # Data fetching logic, API calls
+│   │   ├── model/       # TypeScript types and interfaces
+│   │   ├── service/     # Business logic and service functions
+│   │   └── view/        # React components and pages
+└── ui/                  # Shared UI components, layouts, and hooks
+    ├── components/      # Generic UI components
+    │   └── ui/          # Base UI primitives (buttons, inputs, etc.)
+    ├── hooks/           # Custom React hooks
+    ├── layouts/         # Layout components
+    │   ├── auth/        # Layouts for authentication pages
+    │   └── main/        # Main app layouts
+    └── pages/           # Page-level components (if any)
 ```
 
 ## Testing
@@ -98,12 +92,12 @@ This project uses a comprehensive testing strategy to ensure code quality and ap
 - **UI Tests**(`tests/ui`): Also using **Vitest**, these tests focus on rendering React components and verifying their behavior and appearance without a full browser.
 - **End-to-End (E2E) Tests**(`tests/e2e`): These tests use **Playwright** to simulate real user interactions in a browser, ensuring that entire features work correctly from start to finish.
 
-### Running Tests
+### Running Tests using NPM
 
-- `npm run test`: Runs all Vitest (unit and UI) and Playwright E2E tests.
-- `npm run test:ui`: Runs only the UI tests.
-- `npm run test:unit`: Runs only the unit tests.
-- `npm run test:e2e`: Runs only Playwright E2E tests.
+- `npm run test` or `bun run test`: Runs all Vitest (unit and UI) and Playwright E2E tests.
+- `npm run test:ui` or `bun run test:ui`: Runs only the UI tests.
+- `npm run test:unit` or `bun run test:unit`: Runs only the unit tests.
+- `npm run test:e2e` or `bun run test:e2e`: Runs only Playwright E2E tests.
 
 ---
 
@@ -111,11 +105,11 @@ This project uses a comprehensive testing strategy to ensure code quality and ap
 
 This project includes a set of npm scripts to streamline common development tasks:
 
-- `npm run dev`: Starts the Vite development server with hot-reloading.
-- `npm run build`: Compiles and bundles the application for production.
-- `npm run start`: Serves the production build locally for testing.
-- `npm run lint`: Lints the codebase for potential errors and style issues.
-- `npm run format`: Formats all files with Prettier.
+- `npm run dev` or `bun run dev`: Starts the Vite development server with hot-reloading.
+- `npm run build` or `bun run dev`: Compiles and bundles the application for production.
+- `npm run start` or `bun run dev`: Serves the production build locally for testing.
+- `npm run lint` or `bun run dev`: Lints the codebase for potential errors and style issues.
+- `npm run format` or `bun run dev`: Formats all files with Prettier.
 
 ## Deployment
 

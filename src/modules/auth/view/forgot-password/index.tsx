@@ -1,55 +1,60 @@
-import { type FormEvent } from "react";
-import { APP_ROUTES } from "@app/constant";
+import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
-import { toast } from "sonner";
-import { Button } from "@shared/components/ui/button";
-import { Input } from "@shared/components/ui/input";
-import { Label } from "@shared/components/ui/label";
+import { routes } from "@/lib/constants/route";
+import { Button } from "@/ui/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/ui/components/ui/form";
+import { Input } from "@/ui/components/ui/input";
+import { useViewModel } from "./viewmodel";
 
-export default function Page() {
-  throw new Error("Test error!");
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    toast.success("Reset instructions success sended");
-  };
+const Page = () => {
+  const { form, isLoading, handleForgotPassword } = useViewModel();
 
   return (
     <>
-      <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Forgot account password</h1>
-          <p className="text-muted-foreground text-sm">
-            Enter your email below to receive reset instructions
-          </p>
-        </div>
+      <div className="mb-6 flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">Forgot Password</h1>
+        <p className="text-muted-foreground text-sm text-balance">
+          Enter your email and we'll send you a link to reset your password.
+        </p>
+      </div>
 
-        <div className="grid gap-6">
-          <div className="grid gap-3">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleForgotPassword)} className="flex flex-col gap-6">
+          <div className="grid gap-6">
+            <FormField
+              control={form.control}
               name="email"
-              placeholder="m@example.com"
-              autoComplete="off"
-              defaultValue="admin@admin.com"
-              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="m@example.com" {...field} disabled={isLoading} autoComplete="email" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Send reset instructions
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Send Reset Link
           </Button>
-        </div>
-      </form>
+        </form>
+      </Form>
 
-      <div className="text-center text-sm mt-6">
-        <span>Already have an account? </span>
-        <Link to={APP_ROUTES.LOGIN} className="underline underline-offset-4">
-          Sign in
+      <div className="mt-6 text-center text-sm">
+        <Link to={routes.login} className="underline underline-offset-4">
+          Back to Sign In
         </Link>
       </div>
     </>
   );
+};
+
+/**
+ * The container component acting as the entry point for the feature.
+ */
+export default function Container() {
+  return <Page />;
 }

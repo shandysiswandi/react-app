@@ -1,0 +1,3 @@
+echo "🔍 Running TypeScript check before push..."
+
+bun run check
